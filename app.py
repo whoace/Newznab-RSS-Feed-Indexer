@@ -37,6 +37,10 @@ from config import (
     RSS_SEARCH_URL_TEMPLATE,
     RSS_REQUEST_HEADERS,
     RSS_REQUEST_TIMEOUT,
+    RSS_AUTH_TYPE,
+    RSS_AUTH_USERNAME,
+    RSS_AUTH_PASSWORD,
+    RSS_AUTH_TOKEN,
     CATEGORY_MAP,
     DEFAULT_CATEGORY,
     FIELD_MAP,
@@ -105,12 +109,43 @@ def build_caps_response():
 # RSS fetch + parse
 # --------------------------------------------------------------------------
 
+def build_source_auth_and_headers():
+    """Return (auth, extra_headers) for the upstream RSS request based on
+    RSS_AUTH_TYPE."""
+    auth = None
+    extra_headers = {}
+
+    if RSS_AUTH_TYPE == "basic":
+        if RSS_AUTH_USERNAME or RSS_AUTH_PASSWORD:
+            auth = (RSS_AUTH_USERNAME, RSS_AUTH_PASSWORD)
+        else:
+            log.warning(
+                "RSS_AUTH_TYPE is 'basic' but RSS_AUTH_USERNAME/RSS_AUTH_PASSWORD "
+                "are not set — requests to the upstream feed will likely 401."
+            )
+    elif RSS_AUTH_TYPE == "bearer":
+        if RSS_AUTH_TOKEN:
+            extra_headers["Authorization"] = f"Bearer {RSS_AUTH_TOKEN}"
+        else:
+            log.warning(
+                "RSS_AUTH_TYPE is 'bearer' but RSS_AUTH_TOKEN is not set — "
+                "requests to the upstream feed will likely fail."
+            )
+    # "none" (or anything else): no auth added, e.g. feeds with a key baked
+    # into RSS_SEARCH_URL_TEMPLATE already.
+
+    return auth, extra_headers
+
+
 def fetch_source_rss(query, extra_params=None):
     url = RSS_SEARCH_URL_TEMPLATE.format(query=requests.utils.quote(query or ""))
+    auth, extra_headers = build_source_auth_and_headers()
+    headers = {**RSS_REQUEST_HEADERS, **extra_headers}
     try:
         resp = requests.get(
             url,
-            headers=RSS_REQUEST_HEADERS,
+            headers=headers,
+            auth=auth,
             timeout=RSS_REQUEST_TIMEOUT,
             params=extra_params or {},
         )
@@ -295,6 +330,13 @@ def masked_api_key():
 @app.route("/", methods=["GET"])
 def index():
     """Web GUI: status dashboard + live search tester."""
+    if RSS_AUTH_TYPE == "basic":
+        auth_status = f"Basic Auth (user: {RSS_AUTH_USERNAME or '(not set)'})"
+    elif RSS_AUTH_TYPE == "bearer":
+        auth_status = "Bearer token" if RSS_AUTH_TOKEN else "Bearer (token not set)"
+    else:
+        auth_status = "None"
+
     return render_template(
         "index.html",
         indexer_name=INDEXER_NAME,
@@ -302,6 +344,7 @@ def index():
         api_key_masked=masked_api_key(),
         api_key_for_test_form=API_KEY,
         rss_template=RSS_SEARCH_URL_TEMPLATE,
+        rss_auth_status=auth_status,
         auth_enabled=bool(API_KEY),
     )
 

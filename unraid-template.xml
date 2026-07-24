@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>newznab-rss-indexer</Name>
-  <Repository>yourdockerhubuser/newznab-rss-indexer:latest</Repository>
-  <Registry>https://hub.docker.com/r/yourdockerhubuser/newznab-rss-indexer</Registry>
+  <Repository>whoace/rssindexer:latest</Repository>
+  <Registry>https://hub.docker.com/r/whoace/rssindexer</Registry>
   <Branch>
     <Tag>latest</Tag>
   </Branch>
@@ -29,6 +29,10 @@
   <Config Name="Indexer Name" Target="INDEXER_NAME" Default="My RSS Indexer" Mode="" Description="Display name shown in the web UI and to client apps" Type="Variable" Display="always" Required="false" Mask="false">My RSS Indexer</Config>
   <Config Name="Indexer ID" Target="INDEXER_ID" Default="myrssindexer" Mode="" Description="Internal identifier, no spaces" Type="Variable" Display="always" Required="false" Mask="false">myrssindexer</Config>
   <Config Name="API Key" Target="INDEXER_API_KEY" Default="changeme" Mode="" Description="API key that Sonarr/Radarr/etc. must supply as ?apikey=... Change this from the default." Type="Variable" Display="always" Required="true" Mask="true">changeme</Config>
-  <Config Name="RSS Search URL Template" Target="RSS_SEARCH_URL_TEMPLATE" Default="https://example.com/rss?q={query}" Mode="" Description="Your searchable RSS feed's URL. {query} is replaced with the URL-encoded search term." Type="Variable" Display="always" Required="true" Mask="false">https://example.com/rss?q={query}</Config>
+  <Config Name="RSS Search URL Template" Target="RSS_SEARCH_URL_TEMPLATE" Default="https://members.easynews.com/1.0/global5/index.html?&amp;sbj={query}&amp;sS=5" Mode="" Description="Your searchable RSS feed's URL. {query} is replaced with the URL-encoded search term." Type="Variable" Display="always" Required="true" Mask="false">https://members.easynews.com/1.0/global5/index.html?&amp;sbj={query}&amp;sS=5</Config>
+  <Config Name="Upstream Auth Type" Target="RSS_AUTH_TYPE" Default="basic" Mode="" Description="How to authenticate to the RSS feed above: basic, bearer, or none" Type="Variable" Display="always" Required="false" Mask="false">basic</Config>
+  <Config Name="Upstream Username" Target="RSS_AUTH_USERNAME" Default="" Mode="" Description="Username for HTTP Basic Auth (e.g. your Easynews member login)" Type="Variable" Display="always" Required="false" Mask="false"></Config>
+  <Config Name="Upstream Password" Target="RSS_AUTH_PASSWORD" Default="" Mode="" Description="Password for HTTP Basic Auth" Type="Variable" Display="always" Required="false" Mask="true"></Config>
+  <Config Name="Upstream Bearer Token" Target="RSS_AUTH_TOKEN" Default="" Mode="" Description="Bearer token, only used if Upstream Auth Type is set to bearer" Type="Variable" Display="advanced" Required="false" Mask="true"></Config>
   <Config Name="Category Map Override (JSON, optional)" Target="INDEXER_CATEGORY_MAP_JSON" Default="" Mode="" Description="Optional JSON object mapping your feed's category text to Newznab category IDs, e.g. {&quot;anime&quot;: 5070}" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
 </Container>

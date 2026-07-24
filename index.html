@@ -20,6 +20,7 @@
         <tr><td>API endpoint</td><td><code>/api</code></td></tr>
         <tr><td>API key</td><td><code>{{ api_key_masked }}</code>{% if not auth_enabled %} <span class="warn">(auth disabled)</span>{% endif %}</td></tr>
         <tr><td>Upstream RSS template</td><td><code>{{ rss_template }}</code></td></tr>
+        <tr><td>Upstream auth</td><td><code>{{ rss_auth_status }}</code></td></tr>
       </table>
       <p class="hint">Add this indexer to Sonarr/Radarr/NZBHydra2 as a
       generic "Newznab" indexer using this host's address and the API key above.</p>

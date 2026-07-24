@@ -35,7 +35,7 @@ API_KEY = os.environ.get("INDEXER_API_KEY", "changeme")
 # (commonly "q", "search", "query", "term", etc.)
 RSS_SEARCH_URL_TEMPLATE = os.environ.get(
     "RSS_SEARCH_URL_TEMPLATE",
-    "https://example.com/rss?q={query}",
+    "https://members.easynews.com/1.0/global5/index.html?&sbj={query}&sS=5",
 )
 
 RSS_REQUEST_HEADERS = {
@@ -43,6 +43,22 @@ RSS_REQUEST_HEADERS = {
 }
 
 RSS_REQUEST_TIMEOUT = 15  # seconds
+
+# --------------------------------------------------------------------------
+# Upstream feed authentication
+# --------------------------------------------------------------------------
+# RSS_AUTH_TYPE: "none" | "basic" | "bearer"
+#   - "basic":  sends RSS_AUTH_USERNAME / RSS_AUTH_PASSWORD as HTTP Basic
+#               Auth. This is what Easynews' classic search endpoint
+#               (members.easynews.com) expects — use your Easynews member
+#               username/password.
+#   - "bearer": sends "Authorization: Bearer <RSS_AUTH_TOKEN>"
+#   - "none":   no auth added (some feeds embed a key/passkey directly in
+#               RSS_SEARCH_URL_TEMPLATE instead, which needs no extra config)
+RSS_AUTH_TYPE = os.environ.get("RSS_AUTH_TYPE", "basic")
+RSS_AUTH_USERNAME = os.environ.get("RSS_AUTH_USERNAME", "")
+RSS_AUTH_PASSWORD = os.environ.get("RSS_AUTH_PASSWORD", "")
+RSS_AUTH_TOKEN = os.environ.get("RSS_AUTH_TOKEN", "")
 
 # --------------------------------------------------------------------------
 # Field mapping: RSS <item> child-tag names in the SOURCE feed.

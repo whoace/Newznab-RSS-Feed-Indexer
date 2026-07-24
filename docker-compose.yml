@@ -1,7 +1,8 @@
 services:
   newznab-rss-indexer:
-    build: .
-    # Or, once published: image: yourdockerhubuser/newznab-rss-indexer:latest
+    image: whoace/rssindexer:latest
+    # Uncomment to build locally instead of pulling from Docker Hub:
+    # build: .
     container_name: newznab-rss-indexer
     ports:
       - "5000:5000"
@@ -9,7 +10,10 @@ services:
       - INDEXER_NAME=My RSS Indexer
       - INDEXER_ID=myrssindexer
       - INDEXER_API_KEY=changeme
-      - RSS_SEARCH_URL_TEMPLATE=https://example.com/rss?q={query}
+      - RSS_SEARCH_URL_TEMPLATE=https://members.easynews.com/1.0/global5/index.html?&sbj={query}&sS=5
+      - RSS_AUTH_TYPE=basic
+      - RSS_AUTH_USERNAME=your-easynews-username
+      - RSS_AUTH_PASSWORD=your-easynews-password
     volumes:
       - ./config:/config
     restart: unless-stopped
