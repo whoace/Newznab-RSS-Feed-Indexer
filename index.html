@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ indexer_name }} — Newznab Indexer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>{{ indexer_name }}</h1>
+      <span class="badge">newznab-compliant</span>
+    </header>
+
+    <section class="card">
+      <h2>Status</h2>
+      <table class="kv">
+        <tr><td>Indexer ID</td><td><code>{{ indexer_id }}</code></td></tr>
+        <tr><td>API endpoint</td><td><code>/api</code></td></tr>
+        <tr><td>API key</td><td><code>{{ api_key_masked }}</code>{% if not auth_enabled %} <span class="warn">(auth disabled)</span>{% endif %}</td></tr>
+        <tr><td>Upstream RSS template</td><td><code>{{ rss_template }}</code></td></tr>
+      </table>
+      <p class="hint">Add this indexer to Sonarr/Radarr/NZBHydra2 as a
+      generic "Newznab" indexer using this host's address and the API key above.</p>
+    </section>
+
+    <section class="card">
+      <h2>Quick links</h2>
+      <ul class="links">
+        <li><a href="/api?t=caps" target="_blank">Capabilities (t=caps)</a></li>
+        <li><a href="/health" target="_blank">Health check</a></li>
+        <li><a href="/api/info" target="_blank">Info (JSON)</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Test a search</h2>
+      <form id="search-form">
+        <input type="text" id="q" name="q" placeholder="Search query" autocomplete="off">
+        <select id="t" name="t">
+          <option value="search">search</option>
+          <option value="tvsearch">tvsearch</option>
+          <option value="movie">movie</option>
+          <option value="music">music</option>
+          <option value="book">book</option>
+        </select>
+        <button type="submit">Search</button>
+      </form>
+      <div id="results"></div>
+    </section>
+
+    <footer>
+      <span>Newznab-compliant RSS indexer proxy</span>
+    </footer>
+  </div>
+
+  <script>
+    const form = document.getElementById('search-form');
+    const resultsEl = document.getElementById('results');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = document.getElementById('q').value;
+      const t = document.getElementById('t').value;
+      resultsEl.innerHTML = '<p class="hint">Searching…</p>';
+
+      try {
+        const resp = await fetch(`/api?t=${encodeURIComponent(t)}&q=${encodeURIComponent(q)}&apikey={{ api_key_for_test_form }}`);
+        const text = await resp.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'application/xml');
+
+        const errorEl = doc.querySelector('error');
+        if (errorEl) {
+          resultsEl.innerHTML = `<p class="warn">Error: ${errorEl.getAttribute('description')}</p>`;
+          return;
+        }
+
+        const items = Array.from(doc.querySelectorAll('item'));
+        if (items.length === 0) {
+          resultsEl.innerHTML = '<p class="hint">No results.</p>';
+          return;
+        }
+
+        let rows = items.map(it => {
+          const title = it.querySelector('title')?.textContent ?? '';
+          const size = it.querySelector('enclosure')?.getAttribute('length') ?? '0';
+          const pubDate = it.querySelector('pubDate')?.textContent ?? '';
+          const cat = it.querySelector('category')?.textContent ?? '';
+          return `<tr><td>${title}</td><td>${cat}</td><td>${(parseInt(size)/1e6).toFixed(1)} MB</td><td>${pubDate}</td></tr>`;
+        }).join('');
+
+        resultsEl.innerHTML = `<table class="results">
+          <thead><tr><th>Title</th><th>Category</th><th>Size</th><th>Published</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+      } catch (err) {
+        resultsEl.innerHTML = `<p class="warn">Request failed: ${err}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

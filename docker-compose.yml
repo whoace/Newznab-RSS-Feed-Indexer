@@ -1,0 +1,15 @@
+services:
+  newznab-rss-indexer:
+    build: .
+    # Or, once published: image: yourdockerhubuser/newznab-rss-indexer:latest
+    container_name: newznab-rss-indexer
+    ports:
+      - "5000:5000"
+    environment:
+      - INDEXER_NAME=My RSS Indexer
+      - INDEXER_ID=myrssindexer
+      - INDEXER_API_KEY=changeme
+      - RSS_SEARCH_URL_TEMPLATE=https://example.com/rss?q={query}
+    volumes:
+      - ./config:/config
+    restart: unless-stopped

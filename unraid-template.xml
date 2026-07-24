@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>newznab-rss-indexer</Name>
+  <Repository>yourdockerhubuser/newznab-rss-indexer:latest</Repository>
+  <Registry>https://hub.docker.com/r/yourdockerhubuser/newznab-rss-indexer</Registry>
+  <Branch>
+    <Tag>latest</Tag>
+  </Branch>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/yourusername/newznab-rss-indexer/issues</Support>
+  <Project>https://github.com/yourusername/newznab-rss-indexer</Project>
+  <Overview>A Newznab-compliant indexer that proxies a searchable RSS feed. Add it to Sonarr, Radarr, Lidarr, or NZBHydra2 as a generic Newznab indexer. Includes a web GUI for status and quick search testing.</Overview>
+  <Category>Downloaders: Tools:</Category>
+  <WebUI>http://[IP]:[PORT:5000]/</WebUI>
+  <TemplateURL/>
+  <Icon>https://raw.githubusercontent.com/yourusername/newznab-rss-indexer/main/icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires/>
+  <Config Name="WebUI Port" Target="5000" Default="5000" Mode="tcp" Description="Port for the web UI and Newznab API" Type="Port" Display="always" Required="true" Mask="false">5000</Config>
+  <Config Name="Config Path" Target="/config" Default="/mnt/user/appdata/newznab-rss-indexer" Mode="rw" Description="Persistent storage. Optionally place a config.py here to override any setting without rebuilding the image." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/newznab-rss-indexer</Config>
+  <Config Name="Indexer Name" Target="INDEXER_NAME" Default="My RSS Indexer" Mode="" Description="Display name shown in the web UI and to client apps" Type="Variable" Display="always" Required="false" Mask="false">My RSS Indexer</Config>
+  <Config Name="Indexer ID" Target="INDEXER_ID" Default="myrssindexer" Mode="" Description="Internal identifier, no spaces" Type="Variable" Display="always" Required="false" Mask="false">myrssindexer</Config>
+  <Config Name="API Key" Target="INDEXER_API_KEY" Default="changeme" Mode="" Description="API key that Sonarr/Radarr/etc. must supply as ?apikey=... Change this from the default." Type="Variable" Display="always" Required="true" Mask="true">changeme</Config>
+  <Config Name="RSS Search URL Template" Target="RSS_SEARCH_URL_TEMPLATE" Default="https://example.com/rss?q={query}" Mode="" Description="Your searchable RSS feed's URL. {query} is replaced with the URL-encoded search term." Type="Variable" Display="always" Required="true" Mask="false">https://example.com/rss?q={query}</Config>
+  <Config Name="Category Map Override (JSON, optional)" Target="INDEXER_CATEGORY_MAP_JSON" Default="" Mode="" Description="Optional JSON object mapping your feed's category text to Newznab category IDs, e.g. {&quot;anime&quot;: 5070}" Type="Variable" Display="advanced" Required="false" Mask="false"></Config>
+</Container>
